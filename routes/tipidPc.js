@@ -5,30 +5,83 @@ const puppeteer = require('puppeteer');
 
 var ResponseItems = require("../models/Item")
 
-// Sample api
+var itemsForSale = []
+
+// Sample api use
 // http://localhost:3000/tipidpc/sell/1 
-        
-router.get('/sell/:iteration', async (req, res, next) => {
+
+// Route without a page param
+// Usually the first page
+router.get('/sell', async (req, res, next) => {
+    configureTheURL(null, res)
+})
+
+
+// Route with a page param        
+router.get('/sell/:pageNumber', async (req, res, next) => {
+    var pageNumber = req.params.pageNumber
+    console.log("router 2: " + req.params.pageNumber)
+
+    configureTheURL(pageNumber, res)
+})
+
+function configureTheURL(pageNumber, res) {
+    // Set the URL, checks if has a page number or not
+    var url = ""
+
+    if (pageNumber) {
+        url = "https://tipidpc.com/catalog.php?cat=0&sec=s&page=" + pageNumber
+    } else {
+        url = "https://tipidpc.com/catalog.php?cat=0&sec=s"
+    }
+
+    console.log(url)
+
+    // Now call the crawler and api producer method
+
+    collectDataFromTipidPC(url, res)
+}
+
+async function collectDataFromTipidPC(url, res) {
     try {
         // response array of items
         const browser = await puppeteer.launch({headless: false});
         const browserPage = await browser.newPage();
         browserPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36');
 
-        // Launch TipidPc Website then find the view all button
-        await browserPage.goto("https://tipidpc.com/");
+        // Launch the page and collect data.
+        await browserPage.goto(url);
+
+        // ==================================================================================
+        /**
+         * This commented code below is for crawling purposes,
+         * the puppeteer accesses the home page then virtually clicking some objects to 
+         * access selling page.
+         * Since we can go directly to the selling page items, no need to crawl for now. 
+         */
+        // await browserPage.goto("https://tipidpc.com/");
         // Form that contains the view all button
-        await browserPage.waitForSelector('.itembrowser');
+        // Launch TipidPc Website then find the view all button
+
+        // await browserPage.waitForSelector('.itembrowser');
         // Click show items button
-        const buttonViewAll = await browserPage.$('#itembrowser input[type=submit]')
+        // const buttonViewAll = await browserPage.$('#itembrowser input[type=submit]')
+        // buttonViewAll.click()
 
-        buttonViewAll.click()
+        // ==================================================================================
 
-        await browserPage.waitForSelector('#item-search-results')
+        // This will handle when the page has zero items and return empty array
+        // At this point, the page is completly loaded.
+        if (await browserPage.$('#item-search-results') == null) {
+            res.status(200).json([])
+            console.log("Success, Empty Array")
+        } 
 
+        // The container of the items is available
+        const itemContainer = await browserPage.waitForSelector('#item-search-results')
+        
+        // Now checking the items objects.
         const items = await browserPage.$$('#item-search-results > li')
-
-        var itemsForSale = []
 
         // Loop through the items on the page
         for (const item of items) {
@@ -75,14 +128,14 @@ router.get('/sell/:iteration', async (req, res, next) => {
             itemsForSale.push(sellItem)
         }
 
-        res.json(itemsForSale)
+        res.status(200).json(itemsForSale)
+        console.log("Success, With Items")
 
     } catch (e) {
-        console.log("MY ERROR ", e);
+         console.log("Handled Error")
+        res.json({ message: e.message });
     }
-
-
-});
+}
 
 function extractDateFromString(fullDescription) {
     // Use regex to find the date
@@ -98,13 +151,13 @@ function extractDateFromString(fullDescription) {
     const description = "Invalid date format";
 
     if  (regexx.test(splittedDescription[1])) {
-        console.log("regex1")
+        // console.log("regex1")
         return splittedDescription[1].trim()
     } else if (regexx.test(splittedDescription[2])) {
-        console.log("regex2")
+        // console.log("regex2")
         return splittedDescription[2].trim()
     } else {
-        console.log("else")
+        // console.log("else")
         return description
     }
 }
