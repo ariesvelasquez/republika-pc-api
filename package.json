@@ -14,5 +14,8 @@
     "puppeteer": "^1.13.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
+  },
+  "engines": {
+    "node": "10.16.0"
   }
 }
