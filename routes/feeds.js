@@ -8,24 +8,24 @@ var ResponseItems = require("../models/Item")
 var itemsForSale = []
 
 // Sample api use
-// http://localhost:3000/tipidpc/sell/1 
+// http://localhost:3000/tipidpc/feeds/1 
 
 // Route without a page param
 // Usually the first page
-router.get('/sell', async (req, res, next) => {
+router.get('/feeds', async (req, res, next) => {
     configureTheURL(null, res)
 })
 
 
 // Route with a page param        
-router.get('/sell/:pageNumber', async (req, res, next) => {
+router.get('/feeds/:pageNumber', async (req, res, next) => {
     var pageNumber = req.params.pageNumber
-    console.log("router 2: " + req.params.pageNumber)
+    // console.log("router 2: " + req.params.pageNumber)
 
     configureTheURL(pageNumber, res)
 })
 
-function configureTheURL(pageNumber, res) {
+async function configureTheURL(pageNumber, res) {
     // Set the URL, checks if has a page number or not
     var url = ""
 
@@ -35,17 +35,21 @@ function configureTheURL(pageNumber, res) {
         url = "https://tipidpc.com/catalog.php?cat=0&sec=s"
     }
 
-    console.log(url)
+    // console.log(url)
 
     // Now call the crawler and api producer method
 
-    collectDataFromTipidPC(url, res)
+    collectDataFromTipidPC(url, res, pageNumber)
 }
 
-async function collectDataFromTipidPC(url, res) {
+async function collectDataFromTipidPC(url, res, pageNumber) {
     try {
         // response array of items
-        const browser = await puppeteer.launch({headless: false});
+        // const browser = await puppeteer.launch({headless: false}); THIS COMMENTED INSTANCE IS WITH BROWSER
+        // Setup Crawler
+        const browser = await puppeteer.launch({ 
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        })
         const browserPage = await browser.newPage();
         browserPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36');
 
@@ -74,7 +78,7 @@ async function collectDataFromTipidPC(url, res) {
         // At this point, the page is completly loaded.
         if (await browserPage.$('#item-search-results') == null) {
             res.status(200).json([])
-            console.log("Success, Empty Array")
+            // console.log("Success, Empty Array")
         } 
 
         // The container of the items is available
@@ -111,28 +115,36 @@ async function collectDataFromTipidPC(url, res) {
             // This is still need to be emplemented
             const postUrls = await browserPage.evaluate(a => a.innerHTML, item);;
 
-            // console.log("Desc pt1" + splittedDescription[0]);
-            // console.log("Desc pt2" + splittedDescription[1]);
-            // console.log("Desc pt3" + splittedDescription[2]);
+            const page = pageNumber
 
-            var sellItem = new ResponseItems(
+            var feedItem = new ResponseItems(
                 title,
                 price,
                 "DESCRIPTION",
                 seller,
                 date,
                 "sellerUrl",
-                postUrl
+                postUrl,
+                page
             )
 
-            itemsForSale.push(sellItem)
+            itemsForSale.push(feedItem)
         }
 
-        res.status(200).json(itemsForSale)
-        console.log("Success, With Items")
+        // console.log("items returned: " + itemsForSale.length)
+        
+        // const pageNumber = res.params.pageNumber;
+
+        res.status(200).end(JSON.stringify({
+            page: pageNumber,
+            items: itemsForSale
+        }))
+
+        itemsForSale = []
+        // console.log("Success, With Items")
 
     } catch (e) {
-         console.log("Handled Error")
+        //  console.log("Handled Error")
         res.json({ message: e.message });
     }
 }

@@ -9,7 +9,8 @@ class Item {
         seller,
         date,
         sellerUrl,
-        postUrl
+        postUrl,
+        page
         ) {
 
         
@@ -20,6 +21,7 @@ class Item {
         this.date = date;
         this.sellerUrl = sellerUrl;
         this.postUrl = postUrl;
+        this.page = page;
     }
 }
 
