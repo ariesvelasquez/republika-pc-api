@@ -135,6 +135,8 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
         
         // const pageNumber = res.params.pageNumber;
 
+        browser.close()
+
         res.status(200).end(JSON.stringify({
             page: pageNumber,
             items: itemsForSale

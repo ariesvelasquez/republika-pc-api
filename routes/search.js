@@ -92,6 +92,8 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
             items: searchItems
         }))
 
+        browser.close()
+
         searchItems = []
         // console.log("Success, With Items")
 
