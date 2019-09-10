@@ -77,7 +77,12 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
         // This will handle when the page has zero items and return empty array
         // At this point, the page is completly loaded.
         if (await browserPage.$('#item-search-results') == null) {
-            res.status(200).json([])
+            await browserPage.close()
+            await browser.close()
+            res.status(200).json({
+                isListEmpty: true,
+                items: []
+            })
             // console.log("Success, Empty Array")
         } 
 
@@ -135,7 +140,8 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
         
         // const pageNumber = res.params.pageNumber;
 
-        browser.close()
+        await browserPage.close()
+        await browser.close()
 
         res.status(200).end(JSON.stringify({
             page: pageNumber,
