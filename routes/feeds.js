@@ -115,10 +115,14 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
             
             // const date = extractDateFromString(completeDescription)            
 
-            const postUrl = await item.$eval('a', a => a.href);
+            const postLink = await item.$eval('a', a => a.href);
+
+            const splittedPostLink = postLink.split("=");
+            const postLinkId = splittedPostLink[1]
+
             // This contains the seller url,
             // This is still need to be emplemented
-            const postUrls = await browserPage.evaluate(a => a.innerHTML, item);;
+        // const postUrls = await browserPage.evaluate(a => a.innerHTML, item);;
 
             const page = pageNumber
 
@@ -129,7 +133,7 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
                 seller,
                 date,
                 "sellerUrl",
-                postUrl,
+                postLinkId,
                 page
             )
 
