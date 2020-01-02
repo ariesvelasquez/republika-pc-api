@@ -63,14 +63,17 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
             const seller = otherPostDetials[2];
 
             // Get the date
-            const date = extractDateFromString(completeDescription)
-            
-            // const date = extractDateFromString(completeDescription)            
+            const date = extractDateFromString(completeDescription)          
 
-            const postUrl = await item.$eval('a', a => a.href);
+            // Get Post Url 
+            const postLink = await item.$eval('a', a => a.href);
+
+            const splittedPostLink = postLink.split("=");
+            const postLinkId = splittedPostLink[1]
+
             // This contains the seller url,
             // This is still need to be emplemented
-            const postUrls = await browserPage.evaluate(a => a.innerHTML, item);;
+        // const postUrls = await browserPage.evaluate(a => a.innerHTML, item);;
 
             const page = pageNumber
 
@@ -81,7 +84,7 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
                 seller,
                 date,
                 "sellerUrl",
-                postUrl,
+                postLinkId,
                 page
             )
 

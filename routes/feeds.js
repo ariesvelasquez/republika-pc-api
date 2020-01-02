@@ -112,9 +112,8 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
 
             // Get the date
             const date = extractDateFromString(completeDescription)
-            
-            // const date = extractDateFromString(completeDescription)            
 
+            // Get Post Url 
             const postLink = await item.$eval('a', a => a.href);
 
             const splittedPostLink = postLink.split("=");
