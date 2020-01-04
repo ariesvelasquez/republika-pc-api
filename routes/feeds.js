@@ -133,11 +133,27 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
                 date,
                 "sellerUrl",
                 postLinkId,
+                false,
                 page
             )
 
             itemsForSale.push(feedItem)
         }
+
+        var adItem = new ResponseItems(
+            "title",
+            "price",
+            "DESCRIPTION",
+            "seller",
+            "date",
+            "sellerUrl",
+            "postLinkId",
+            true,
+            pageNumber
+        )
+
+        // Add the ad item in the last.
+        itemsForSale.push(adItem)
 
         // console.log("items returned: " + itemsForSale.length)
         
