@@ -1,4 +1,4 @@
-const http = require("http");
+const https = require("https");
 const express = require('express');
 
 const app = express();
@@ -20,7 +20,7 @@ app.use(function(error, req, res, next) {
 
 setInterval(function() {
     console.log("Wake Interval Func Called")
-    http.get("https://republika-pc-api.herokuapp.com");
+    https.get("https://republika-pc-api.herokuapp.com");
 }, 300000)
 
 const port = process.env.PORT || 3000;
