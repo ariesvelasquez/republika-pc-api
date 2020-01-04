@@ -13,9 +13,14 @@ app.use('/playground', playground)
 
 // Error Handle
 app.use(function(error, req, res, next) {
-    console.log("Handled Error")
+    console.log("Handled Error ")
     res.json({ message: error.message });
 });
+
+setInterval(function() {
+    console.log("Wake Interval Func Called")
+    http.get("https://republika-pc-api.herokuapp.com");
+}, 300000)
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log('Listening on port ' + port));
