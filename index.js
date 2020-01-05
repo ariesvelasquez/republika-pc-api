@@ -4,12 +4,14 @@ const express = require('express');
 const app = express();
 const tipidPcFeeds = require('./routes/feeds');
 const tipidPcSearch = require('./routes/search');
+const tipidPcUserItems = require('./routes/useritems');
 const playground = require('./routes/playground')
 
 // Routers
 app.set('json spaces', 2);
 app.use('/tipidpc', tipidPcFeeds);
 app.use('/tipidpc', tipidPcSearch);
+app.use('/tipidpc', tipidPcUserItems)
 app.use('/playground', playground)
 
 // Error Handle
