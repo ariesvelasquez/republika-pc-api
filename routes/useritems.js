@@ -37,10 +37,20 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
         if (await browserPage.$('#user-ifs') == null) {
             await browserPage.close()
             await browser.close()
+
+            var feedItem = new ResponseItems(
+                "", "", "", "", "", "", "", "", true
+            )
+
+            searchItems.push(feedItem)
+
             res.status(200).json({
                 isListEmpty: true,
-                items: []
+                items: searchItems
             })
+            searchItems = []
+            res.end()
+            
             // console.log("Success, Empty Array")
         } 
 
@@ -92,7 +102,8 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
                 "", // Date
                 "sellerUrl",
                 postLinkId,
-                "1" // Page
+                "1", // Page
+                false
             )
 
             searchItems.push(feedItem)
@@ -115,6 +126,7 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
     } catch (e) {
         //  console.log("Handled Error")
         res.json({ message: e.message });
+        res.end();
     }
 })
 

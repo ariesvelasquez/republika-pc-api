@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 
 var ResponseItems = require("../models/Item")
 
-var itemsForSale = []
+var searchItems = []
 
 // Sample api use
 // http://localhost:3000/tipidpc/feeds/1 
@@ -79,10 +79,20 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
         if (await browserPage.$('#item-search-results') == null) {
             await browserPage.close()
             await browser.close()
+
+            var feedItem = new ResponseItems(
+                "", "", "", "", "", "", "", "", true
+            )
+
+            searchItems.push(feedItem)
+
             res.status(200).json({
                 isListEmpty: true,
-                items: []
+                items: searchItems
             })
+
+            searchItems = []
+            res.end()
             // console.log("Success, Empty Array")
         } 
 
@@ -133,13 +143,14 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
                 date,
                 "sellerUrl",
                 postLinkId,
-                page
+                page,
+                false
             )
 
-            itemsForSale.push(feedItem)
+            searchItems.push(feedItem)
         }
 
-        // console.log("items returned: " + itemsForSale.length)
+        // console.log("items returned: " + searchItems.length)
         
         // const pageNumber = res.params.pageNumber;
 
@@ -148,15 +159,16 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
 
         res.status(200).end(JSON.stringify({
             page: pageNumber,
-            items: itemsForSale
+            items: searchItems
         }))
 
-        itemsForSale = []
+        searchItems = []
         // console.log("Success, With Items")
 
     } catch (e) {
         //  console.log("Handled Error")
         res.json({ message: e.message });
+        res.end()
     }
 }
 

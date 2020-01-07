@@ -10,7 +10,8 @@ class Item {
         date,
         seller_url,
         link_id,
-        page
+        page,
+        isEmpty
         ) {
 
         
@@ -22,6 +23,7 @@ class Item {
         this.seller_url = seller_url;
         this.link_id = link_id;
         this.page = page;
+        this.isEmpty = isEmpty;
     }
 }
 

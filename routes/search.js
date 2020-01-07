@@ -7,6 +7,9 @@ var ResponseItems = require("../models/Item")
 
 var searchItems = []
 
+// Sample Usage 
+// http://localhost:3000/tipidpc/search/ryzen 5/1
+
 router.get('/search/:item/:pageNumber', async ( req, res, next) => {
     try {
         // Get the page
@@ -31,10 +34,20 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
         if (await browserPage.$('#item-search-results') == null) {
             await browserPage.close()
             await browser.close()
+
+            var feedItem = new ResponseItems(
+                "", "", "", "", "", "", "", "", true
+            )
+
+            searchItems.push(feedItem)
+
             res.status(200).json({
                 isListEmpty: true,
-                items: []
+                items: searchItems
             })
+
+            searchItems = []
+            res.end()
             // console.log("Success, Empty Array")
         } 
 
@@ -85,7 +98,8 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
                 date,
                 "sellerUrl",
                 postLinkId,
-                page
+                page,
+                false
             )
 
             searchItems.push(feedItem)
@@ -95,12 +109,12 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
         
         // const pageNumber = res.params.pageNumber;
 
+        browser.close()
+
         res.status(200).end(JSON.stringify({
             page: pageNumber,
             items: searchItems
         }))
-
-        browser.close()
 
         searchItems = []
         // console.log("Success, With Items")
@@ -108,6 +122,7 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
     } catch (e) {
         //  console.log("Handled Error")
         res.json({ message: e.message });
+        res.end()
     }
 })
 
