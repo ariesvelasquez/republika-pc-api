@@ -1,5 +1,6 @@
 const https = require("https");
 const express = require('express');
+var timeout = require('connect-timeout'); //express v4
 
 const app = express();
 const tipidPcFeeds = require('./routes/feeds');
@@ -14,16 +15,14 @@ app.use('/tipidpc', tipidPcSearch);
 app.use('/tipidpc', tipidPcUserItems)
 app.use('/playground', playground)
 
+app.use(timeout(120000));
+// 30000
+
 // Error Handle
 app.use(function(error, req, res, next) {
     console.log("Handled Error ")
     res.json({ message: error.message });
 });
-
-setInterval(function() {
-    console.log("Wake Interval Func Called")
-    https.get("https://republika-pc-api.herokuapp.com");
-}, 300000)
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log('Listening on port ' + port));
