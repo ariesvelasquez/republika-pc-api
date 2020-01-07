@@ -93,10 +93,8 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
             var feedItem = new ResponseItems(
                 title,
                 price,
-                "DESCRIPTION",
                 seller,
                 date,
-                "sellerUrl",
                 postLinkId,
                 page,
                 false

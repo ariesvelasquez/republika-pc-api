@@ -97,10 +97,8 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
             var feedItem = new ResponseItems(
                 title,
                 price,
-                "DESCRIPTION",
                 seller,
                 "", // Date
-                "sellerUrl",
                 postLinkId,
                 "1", // Page
                 false

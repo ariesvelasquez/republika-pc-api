@@ -138,10 +138,8 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
             var feedItem = new ResponseItems(
                 title,
                 price,
-                "DESCRIPTION",
                 seller,
                 date,
-                "sellerUrl",
                 postLinkId,
                 page,
                 false
