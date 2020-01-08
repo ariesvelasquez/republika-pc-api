@@ -20,7 +20,7 @@ class Item {
         this.link_id = link_id;
         this.page = page;
         this.is_empty = is_empty;
-        this.is_feed = is_feed;
+        this.is_feed = is_feed; // This Flag is for UI to check if the item is for Feed Display or User Items Display
     }
 }
 
