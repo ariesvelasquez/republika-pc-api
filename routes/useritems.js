@@ -38,17 +38,12 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
             await browserPage.close()
             await browser.close()
 
-            var feedItem = new ResponseItems(
-                "", "", "", "", "", "", "", "", true, false
-            )
-
-            searchItems.push(feedItem)
-
             res.status(200).json({
+                page: 1,
                 isListEmpty: true,
-                items: searchItems
+                items: []
             })
-            searchItems = []
+
             res.end()
             
             // console.log("Success, Empty Array")
@@ -101,7 +96,6 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
                 "", // Date
                 postLinkId,
                 "1", // Page
-                false, // is_empty
                 false // is_feed
             )
 

@@ -80,18 +80,12 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
             await browserPage.close()
             await browser.close()
 
-            var feedItem = new ResponseItems(
-                "", "", "", "", "", "", "", "", true, true
-            )
-
-            searchItems.push(feedItem)
-
             res.status(200).json({
+                page: pageNumber,
                 isListEmpty: true,
-                items: searchItems
+                items: []
             })
 
-            searchItems = []
             res.end()
             // console.log("Success, Empty Array")
         } 
@@ -142,7 +136,6 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
                 date,
                 postLinkId,
                 page,
-                false,
                 true
             )
 
