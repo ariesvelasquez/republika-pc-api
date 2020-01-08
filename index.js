@@ -15,7 +15,7 @@ app.use('/tipidpc', tipidPcSearch);
 app.use('/tipidpc', tipidPcUserItems)
 app.use('/playground', playground)
 
-app.use(timeout(120000));
+app.use(timeout(240000));
 // 30000
 
 // Error Handle
