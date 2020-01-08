@@ -36,7 +36,7 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
             await browser.close()
 
             var feedItem = new ResponseItems(
-                "", "", "", "", "", "", "", "", true
+                "", "", "", "", "", "", "", "", true, false
             )
 
             searchItems.push(feedItem)
@@ -97,6 +97,7 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
                 date,
                 postLinkId,
                 page,
+                false,
                 false
             )
 

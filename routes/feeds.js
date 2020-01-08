@@ -81,7 +81,7 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
             await browser.close()
 
             var feedItem = new ResponseItems(
-                "", "", "", "", "", "", "", "", true
+                "", "", "", "", "", "", "", "", true, true
             )
 
             searchItems.push(feedItem)
@@ -142,7 +142,8 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
                 date,
                 postLinkId,
                 page,
-                false
+                false,
+                true
             )
 
             searchItems.push(feedItem)

@@ -9,7 +9,8 @@ class Item {
         date,
         link_id,
         page,
-        isEmpty
+        is_empty,
+        is_feed
         ) {
         
         this.name = name;
@@ -18,7 +19,8 @@ class Item {
         this.date = date;
         this.link_id = link_id;
         this.page = page;
-        this.isEmpty = isEmpty;
+        this.is_empty = is_empty;
+        this.is_feed = is_feed;
     }
 }
 

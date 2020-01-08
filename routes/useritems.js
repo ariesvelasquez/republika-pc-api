@@ -39,7 +39,7 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
             await browser.close()
 
             var feedItem = new ResponseItems(
-                "", "", "", "", "", "", "", "", true
+                "", "", "", "", "", "", "", "", true, false
             )
 
             searchItems.push(feedItem)
@@ -101,7 +101,8 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
                 "", // Date
                 postLinkId,
                 "1", // Page
-                false
+                false, // is_empty
+                false // is_feed
             )
 
             searchItems.push(feedItem)
