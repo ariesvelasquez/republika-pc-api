@@ -1,4 +1,5 @@
 const express = require('express');
+const $ = require('cheerio');
 const router = express.Router();
 
 const puppeteer = require('puppeteer');
@@ -22,99 +23,69 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
         const pageUrl = "https://tipidpc.com/useritems.php?username="+ userName
 
         // Setup Crawler
-        const browser = await puppeteer.launch({ 
+        puppeteer
+        // .launch({headless: false})
+        .launch({ 
             args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
         })
+        .then(function(browser){
+            return browser.newPage()
+        })
+        .then(async function(page) {
+            return page.goto(pageUrl).then(function() {
+              return page.content();
+            });
+        })
+        .then(function(html) {
+            // $('#user-ifs LI h4 A', html).each((i, el) => {}); <- reference
 
-        const browserPage = await browser.newPage();
-        browserPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36');
+            $('#user-ifs LI', html).each((i, el) => {
 
-        // Launch the page and collect data.
-        await browserPage.goto(pageUrl);
+                // Extract Data 
+                var title = $('h4 a', el).text()
+                var price = $('div strong', el).text()
+                var postLinkId = $('h4 a', el).attr('href').split("=")[1]
+                var seller = userName
 
-        // This will handle when the page has zero items and return empty array
-        // At this point, the page is completly loaded.
-        if (await browserPage.$('#user-ifs') == null) {
-            await browserPage.close()
-            await browser.close()
+                var feedItem = new ResponseItems(
+                    title,
+                    price,
+                    seller,
+                    "", // Date
+                    postLinkId,
+                    "1", // Page
+                    false // is_feed
+                )
 
-            res.status(200).json({
-                page: 1,
-                isListEmpty: true,
-                items: []
-            })
+                searchItems.push(feedItem)
+            });
 
-            res.end()
-            
-            // console.log("Success, Empty Array")
-        } 
+            // Handle If Searh Result is Empty
+            // Valid User with no for sale item: asdfasdf
+            if (searchItems.length == 0) {
+                res.status(200).json({
+                    page: 1,
+                    isListEmpty: true,
+                    items: []
+                })
+    
+                res.end()
+            }
 
-        // The container of the items is available
-        const itemContainer = await browserPage.waitForSelector('#user-ifs')
-        
-        // Now checking the items objects.
-        const items = await browserPage.$$('#user-ifs > li')
+            // console.log("search items count " + searchItems.length)
 
-        // Loop through the items on the page
-        for (const item of items) {
-            // Todo note: 
-            // * For optimization, maybe try to pass the data extraction to the client to reduce processing.
-            // * Convert Date to much more needed format.
+            res.status(200).end(JSON.stringify({
+                page: "1",
+                items: searchItems
+            }))
 
-            // Extract needed data
-            const completeDescription = await browserPage.evaluate(li => li.innerText, item);
-            const descriptionArray = completeDescription.split("\n");
+            searchItems = []
 
-            const priceAndTypeDescriptionArray = descriptionArray[1].split("—");
-            
-            // Seller Name, Date, etc.
-            // const otherPostDetials = descriptionArray[3].split(" ");
-
-            // Define new Item data
-            const seller = userName;
-            const title = descriptionArray[0];
-            const price = priceAndTypeDescriptionArray[0].trim();
-            // const type = priceAndTypeDescriptionArray[1].trim()
-
-            // Get the date [In the website list, Date is not displayed]
-            // const date = extractDateFromString(completeDescription)          
-
-            // Get Post Url 
-            const postLink = await item.$eval('a', a => a.href);
-
-            const splittedPostLink = postLink.split("=");
-            const postLinkId = splittedPostLink[1]
-
-            // This contains the seller url,
-            // This is still need to be emplemented
-            // const postUrls = await browserPage.evaluate(a => a.innerHTML, item);;
-
-            var feedItem = new ResponseItems(
-                title,
-                price,
-                seller,
-                "", // Date
-                postLinkId,
-                "1", // Page
-                false // is_feed
-            )
-
-            searchItems.push(feedItem)
-        }
-
-        // console.log("items returned: " + itemsForSale.length)
-        
-        // const pageNumber = res.params.pageNumber;
-
-        res.status(200).end(JSON.stringify({
-            page: "1",
-            items: searchItems
-        }))
-
-        browser.close()
-
-        searchItems = []
-        // console.log("Success, With Items")
+        })
+        .catch(function(err) {
+            res.json({ message: err.message });
+            res.end();
+        });
 
     } catch (e) {
         //  console.log("Handled Error")
@@ -123,29 +94,29 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
     }
 })
 
-function extractDateFromString(fullDescription) {
-    // Use regex to find the date
-    // Sample Date "Aug 03 2019 09:27 PM"
-    // Sometimes the date can be get on other index so
-    // find out where is the date.
-    var regexx = /^ [a-zA-Z]{3} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2} [a-zA-Z]{2}$/i;
+// function extractDateFromString(fullDescription) {
+//     // Use regex to find the date
+//     // Sample Date "Aug 03 2019 09:27 PM"
+//     // Sometimes the date can be get on other index so
+//     // find out where is the date.
+//     var regexx = /^ [a-zA-Z]{3} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2} [a-zA-Z]{2}$/i;
 
-    // This will divide the whole description to two parts using "on"
-    // the second part contains the date
-    const splittedDescription = fullDescription.split("on");
+//     // This will divide the whole description to two parts using "on"
+//     // the second part contains the date
+//     const splittedDescription = fullDescription.split("on");
 
-    const description = "Invalid date format";
+//     const description = "Invalid date format";
 
-    if  (regexx.test(splittedDescription[1])) {
-        // console.log("regex1")
-        return splittedDescription[1].trim()
-    } else if (regexx.test(splittedDescription[2])) {
-        // console.log("regex2")
-        return splittedDescription[2].trim()
-    } else {
-        // console.log("else")
-        return description
-    }
-}
+//     if  (regexx.test(splittedDescription[1])) {
+//         // console.log("regex1")
+//         return splittedDescription[1].trim()
+//     } else if (regexx.test(splittedDescription[2])) {
+//         // console.log("regex2")
+//         return splittedDescription[2].trim()
+//     } else {
+//         // console.log("else")
+//         return description
+//     }
+// }
 
 module.exports = router
