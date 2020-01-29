@@ -60,7 +60,8 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
         const browser = await puppeteer.launch({ 
             // args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
             args: [
-                '--no-sandbox'
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
                 // ,
                 // '--disable-setuid-sandbox',
                 // '--disable-gpu',

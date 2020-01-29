@@ -24,12 +24,10 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
         const pageUrl = "https://tipidpc.com/useritems.php?username="+ userName
 
         // Setup Crawler
-        puppeteer
-        // .launch({headless: false})
-        .launch({ 
-            // args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
+        const browser = await puppeteer.launch({             // args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
             args: [
-                '--no-sandbox'
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
                 // ,
                 // '--disable-setuid-sandbox',
                 // '--disable-gpu',
@@ -38,9 +36,8 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
                 // '--proxy-bypass-list=*'
            ]
         })
-        .then(function(browser){
-            return browser.newPage()
-        })
+
+        browser.newPage()
         .then(async function(page) {
             return page.goto(pageUrl).then(function() {
               return page.content();
@@ -89,6 +86,7 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
 
             searchItems = []
 
+            browser.close()
         })
         .catch(function(e) {
             //  console.log("Handled Error")

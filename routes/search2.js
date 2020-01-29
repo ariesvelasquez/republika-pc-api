@@ -29,23 +29,21 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
         const pageUrl = "https://tipidpc.com/itemsearch.php?sec=s&namekeys="+ searchKey +"&cat=&page=" + pageNumber
 
         // Setup Crawler
-        puppeteer
-        // .launch({headless: false})
-        .launch({ 
+        const browser = await puppeteer.launch({ 
             // args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
             args: [
-                '--no-sandbox'
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
                 // ,
-                // '--disable-setuid-sandbox',
+                // ,
                 // '--disable-gpu',
                 // '--disable-dev-shm-usage',
                 // '--proxy-server="direct://"',
                 // '--proxy-bypass-list=*'
            ]
         })
-        .then(function(browser){
-            return browser.newPage()
-        })
+
+        browser.newPage()
         .then(async function(page) {
             return page.goto(pageUrl).then(function() {
               return page.content();
@@ -98,13 +96,20 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
 
             searchItems = []
 
+            browser.close()
         })
+        // .finally (function() {
+        //     browser.close()
+        // })
         .catch(function(e) {
-            return res.status(400).json({
-                status: 400,
-                error: e.message,
-            })
+            console.log("searchItems Error " + e.message)
+            // return res.status(400).json({
+            //     status: 400,
+            //     error: e.message,
+            // })
         });
+
+        // await browser.newPage()
 
     } catch (e) {
         console.log("searchItems Error " + e.message)
