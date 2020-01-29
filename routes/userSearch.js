@@ -4,24 +4,28 @@ const router = express.Router();
 
 const puppeteer = require('puppeteer');
 
-var ResponseItems = require("../models/Item")
+var ResponseItems = require("../models/item")
 
 var searchItems = []
 
 // Sample Usage 
-// http://localhost:3000/tipidpc/user_items/pchub
+// http://localhost:3000/tipidpc/usersearch/pchub
 
 // Sample URL
-// https://tipidpc.com/useritems.php?username=pchub
+//https://tipidpc.com/usersearch.php?key=pchub
 
-router.get('/user_items/:userName/', async ( req, res, next) => {
-    
-    try {
+router.get('/user_search/:userName/', async ( req, res, next) => {
+
+    // req.on("close", function() {
+    //     res.send();
+    // });
+
+    try { 
         // Get the page
         const userName = req.params.userName
 
         // Set the URL
-        const pageUrl = "https://tipidpc.com/useritems.php?username="+ userName
+        const pageUrl = "https://tipidpc.com/usersearch.php?key="+ userName
 
         // Setup Crawler
         puppeteer
@@ -40,20 +44,17 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
         .then(function(html) {
             // $('#user-ifs LI h4 A', html).each((i, el) => {}); <- reference
 
-            $('#user-ifs LI', html).each((i, el) => {
+            $('.userlist LI', html).each((i, el) => {
 
                 // Extract Data 
-                var title = $('h4 a', el).text()
-                var price = $('div strong', el).text()
-                var postLinkId = $('h4 a', el).attr('href').split("=")[1]
-                var seller = userName
+                var name = $('h2 a', el).text()
 
                 var feedItem = new ResponseItems(
-                    title,
-                    price,
-                    seller,
+                    "title", // title
+                    "", // Price
+                    name,
                     "", // Date
-                    postLinkId,
+                    "", // post link id
                     "1", // Page
                     false // is_feed
                 )
@@ -64,11 +65,11 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
             // Handle If Searh Result is Empty
             // Valid User with no for sale item: asdfasdf
             if (searchItems.length == 0) {
-                res.status(200).end(JSON.stringify({
+                res.status(200).json({
                     page: 1,
                     isListEmpty: true,
                     items: []
-                }))
+                })
             }
 
             // console.log("search items count " + searchItems.length)
@@ -82,7 +83,6 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
 
         })
         .catch(function(e) {
-            //  console.log("Handled Error")
             return res.status(400).json({
                 status: 400,
                 error: e.message,
@@ -90,8 +90,7 @@ router.get('/user_items/:userName/', async ( req, res, next) => {
         });
 
     } catch (e) {
-        //  console.log("Handled Error")
-        console.log("userItems Error " + e.message)
+        console.log("userSearch Error " + e.message)
     }
 })
 

@@ -13,12 +13,22 @@ var searchItems = []
 // Route without a page param
 // Usually the first page
 router.get('/feeds', async (req, res, next) => {
+
+    req.on("close", function() {
+        remote_request.abort();
+    });
+
     configureTheURL(null, res)
 })
 
 
 // Route with a page param        
 router.get('/feeds/:pageNumber', async (req, res, next) => {
+
+    // req.on("close", function() {
+    //     remote_request.abort();
+    // });
+
     var pageNumber = req.params.pageNumber
     // console.log("router 2: " + req.params.pageNumber)
 
@@ -85,8 +95,6 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
                 isListEmpty: true,
                 items: []
             })
-
-            res.end()
             // console.log("Success, Empty Array")
         } 
 
@@ -159,8 +167,7 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
 
     } catch (e) {
         //  console.log("Handled Error")
-        res.json({ message: e.message });
-        res.end()
+        console.log("feeds Error " + e.message)
     }
 }
 
@@ -175,7 +182,7 @@ function extractDateFromString(fullDescription) {
     // the second part contains the date
     const splittedDescription = fullDescription.split("on");
 
-    const description = "Invalid date format";
+    const description = "";
 
     if  (regexx.test(splittedDescription[1])) {
         // console.log("regex1")

@@ -11,6 +11,11 @@ var searchItems = []
 // http://localhost:3000/tipidpc/search/ryzen 5/1
 
 router.get('/search/:item/:pageNumber', async ( req, res, next) => {
+
+    // req.on("close", function() {
+    //     res.send();
+    // });
+
     try {
         // Get the page
         const searchKey = req.params.item
@@ -40,8 +45,6 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
                 isListEmpty: true,
                 items: []
             })
-
-            res.end()
             // console.log("Success, Empty Array")
         } 
 
@@ -101,7 +104,8 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
         
         // const pageNumber = res.params.pageNumber;
 
-        browser.close()
+        await browserPage.close()
+        await browser.close()
 
         res.status(200).end(JSON.stringify({
             page: pageNumber,
@@ -113,8 +117,7 @@ router.get('/search/:item/:pageNumber', async ( req, res, next) => {
 
     } catch (e) {
         //  console.log("Handled Error")
-        res.json({ message: e.message });
-        res.end()
+        console.log("search Error " + e.message)
     }
 })
 
