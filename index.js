@@ -4,7 +4,7 @@ var timeout = require('connect-timeout'); //express v4
 
 const app = express();
 const tipidPcFeeds = require('./routes/feeds');
-const tipidPcSearch = require('./routes/search');
+const tipidPcSearch = require('./routes/search2');
 const tipidPcUserItems = require('./routes/useritems');
 const tipidPcUserSearch = require('./routes/userSearch');
 const playground = require('./routes/playground')
