@@ -4,7 +4,7 @@ const router = express.Router();
 
 const puppeteer = require('puppeteer');
 
-var ResponseItems = require("../models/item")
+var ResponseItems = require("../models/Item")
 
 var searchItems = []
 
