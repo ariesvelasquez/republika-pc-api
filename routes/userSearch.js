@@ -31,7 +31,15 @@ router.get('/user_search/:userName/', async ( req, res, next) => {
         puppeteer
         // .launch({headless: false})
         .launch({ 
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
+            // args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-gpu',
+                '--disable-dev-shm-usage',
+                '--proxy-server="direct://"',
+                '--proxy-bypass-list=*'
+           ]
         })
         .then(function(browser){
             return browser.newPage()

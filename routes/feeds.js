@@ -58,7 +58,16 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
         // const browser = await puppeteer.launch({headless: false}); THIS COMMENTED INSTANCE IS WITH BROWSER
         // Setup Crawler
         const browser = await puppeteer.launch({ 
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
+            // args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-gpu',
+                '--disable-dev-shm-usage',
+                '--proxy-server="direct://"',
+                '--proxy-bypass-list=*'
+           ]
+            
         })
         const browserPage = await browser.newPage();
         browserPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36');
