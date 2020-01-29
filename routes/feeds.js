@@ -60,12 +60,13 @@ async function collectDataFromTipidPC(url, res, pageNumber) {
         const browser = await puppeteer.launch({ 
             // args: ['--no-sandbox', '--disable-setuid-sandbox', '–disable-dev-shm-usage', '--disable-extensions']
             args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-gpu',
-                '--disable-dev-shm-usage',
-                '--proxy-server="direct://"',
-                '--proxy-bypass-list=*'
+                '--no-sandbox'
+                // ,
+                // '--disable-setuid-sandbox',
+                // '--disable-gpu',
+                // '--disable-dev-shm-usage',
+                // '--proxy-server="direct://"',
+                // '--proxy-bypass-list=*'
            ]
             
         })
